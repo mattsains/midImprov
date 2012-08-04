@@ -33,87 +33,40 @@ namespace midImprov
             Keys k=new Keys();
             k.note=(Notes)cmbNote.SelectedIndex;
             k.mode=(Mode)cmbMode.SelectedIndex;
-            int lastNote = 0;
-            int Oct=0;
-            for (byte i = 1; i < 16; i++)
-            {
+            
+            builder.Command = ChannelCommand.NoteOn;
+            builder.MidiChannel = 0;
+            builder.Data1 = 57 + (int)Mozart.component(k, 1);
+            builder.Data2 = 127;
+            builder.Build();
+            outDevice.Send(builder.Result);
+            System.Threading.Thread.Sleep(500);
 
-                System.Threading.Thread.Sleep(50);
-                Notes n = Mozart.component(k, i);
+            builder.Command = ChannelCommand.NoteOn;
+            builder.MidiChannel = 0;
+            builder.Data1 = 57 + (int)Mozart.component(k, 3);
+            builder.Data2 = 127;
+            builder.Build();
+            outDevice.Send(builder.Result);
+            System.Threading.Thread.Sleep(500);
 
-                Oct = lastNote%12 > (int)n ? Oct + 1 : Oct;
-                lastNote = (int)n + 12 * Oct;
+            builder.Command = ChannelCommand.NoteOn;
+            builder.MidiChannel = 0;
+            builder.Data1 = 57 + (int)Mozart.component(k, 5);
+            builder.Data2 = 127;
+            builder.Build();
+            outDevice.Send(builder.Result);
+            System.Threading.Thread.Sleep(500);
 
-                scaleList.Items.Add(n);
-                this.Refresh();
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
+            builder.Command = ChannelCommand.NoteOn;
+            builder.MidiChannel = 0;
+            builder.Data1 = 57 + (int)Mozart.component(k, 1)+12;
+            builder.Data2 = 127;
+            builder.Build();
+            outDevice.Send(builder.Result);
+            
+            System.Threading.Thread.Sleep(2000);
 
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote+57+12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                System.Threading.Thread.Sleep(250);
-
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote+57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57+12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-            }
-            lastNote = int.MaxValue;
-            for (byte i = 14; i >0; i--)
-            {
-
-                System.Threading.Thread.Sleep(50);
-                Notes n = Mozart.component(k, i);
-
-                Oct = lastNote % 12 < (int)n ? Oct - 1 : Oct;
-                lastNote = (int)n + 12 * Oct;
-
-                scaleList.Items.Add(n);
-                this.Refresh();
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57 + 12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                System.Threading.Thread.Sleep(250);
-
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57 + 12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-            }
             outDevice.Close();
         }
 

@@ -23,7 +23,7 @@ namespace midImprov
         /// <returns>the note</returns>
         public static Notes component(Keys key, int interval)
         {
-            interval = ((interval - 1) % 7)+1;
+            interval = ((interval - 1) % 7)+1;//translate octaves back onto the domain of this function
             byte note = (byte)key.note;
             switch (interval)
             {
