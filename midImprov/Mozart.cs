@@ -20,8 +20,8 @@ namespace midImprov
         /// </summary>
         /// <param name="key">The key to select the component from</param>
         /// <param name="interval">the interval to select. 1=root, 5=fifth, etc</param>
-        /// <returns>the note</returns>
-        public static Notes component(Keys key, int interval)
+        /// <returns>the note offset from middle A (57)</returns>
+        public static byte component(Keys key, int interval)
         {
             interval = ((interval - 1) % 7)+1;
             byte note = (byte)key.note;
@@ -51,9 +51,10 @@ namespace midImprov
                         case Mode.Major: note += 9; break;
                     } break;
                 case 7: note += 11; break;
+                case 8: note = (byte)(component(key, interval) + 12); break; 
             }
             note %= 12;
-            return (Notes)note;
+            return note;
         }
 
 

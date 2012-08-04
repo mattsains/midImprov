@@ -39,7 +39,7 @@ namespace midImprov
             {
 
                 System.Threading.Thread.Sleep(50);
-                Notes n = Mozart.component(k, i);
+                byte n = Mozart.component(k, i);
 
                 Oct = lastNote%12 > (int)n ? Oct + 1 : Oct;
                 lastNote = (int)n + 12 * Oct;
@@ -79,7 +79,7 @@ namespace midImprov
             {
 
                 System.Threading.Thread.Sleep(50);
-                Notes n = Mozart.component(k, i);
+                byte n = Mozart.component(k, i);
 
                 Oct = lastNote % 12 < (int)n ? Oct - 1 : Oct;
                 lastNote = (int)n + 12 * Oct;
