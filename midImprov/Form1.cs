@@ -8,11 +8,14 @@ using System.Text;
 using System.Windows.Forms;
 using Sanford.Multimedia.Midi;
 using Sanford.Multimedia.Midi.UI;
+using System.Threading;
 
 namespace midImprov
 {
     public partial class Form1 : Form
     {
+        static Sequencer s = new Sequencer();
+        Thread t;
         public Form1()
         {
             InitializeComponent();
@@ -25,101 +28,36 @@ namespace midImprov
 
         private void button1_Click(object sender, EventArgs e)
         {
-            OutputDevice outDevice = new OutputDevice(0);
-
-            ChannelMessageBuilder builder = new ChannelMessageBuilder();
-
-            scaleList.Items.Clear();
-            Keys k=new Keys();
-            k.note=(Notes)cmbNote.SelectedIndex;
-            k.mode=(Mode)cmbMode.SelectedIndex;
-            int lastNote = 0;
-            int Oct=0;
-            for (byte i = 1; i < 16; i++)
+            System.Threading.Thread.Sleep(100);
+            try
             {
-
-                System.Threading.Thread.Sleep(50);
-                byte n = Mozart.component(k, i);
-
-                Oct = lastNote%12 > (int)n ? Oct + 1 : Oct;
-                lastNote = (int)n + 12 * Oct;
-
-                scaleList.Items.Add((Notes)n);
-                this.Refresh();
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote+57+12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                System.Threading.Thread.Sleep(250);
-
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote+57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57+12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
+                if (!t.IsAlive)
+                {
+                    openFileDialog1.InitialDirectory = Application.ExecutablePath;
+                    openFileDialog1.ShowDialog();
+                    s.GetFromCSV(openFileDialog1.FileName);
+                    t = new Thread(make_play);
+                    t.Start();
+                }
+                else { t.Abort(); }
+                s.Stop();
             }
-            lastNote = int.MaxValue;
-            for (byte i = 14; i >0; i--)
+            catch (Exception)
             {
-
-                System.Threading.Thread.Sleep(50);
-                byte n = Mozart.component(k, i);
-
-                Oct = lastNote % 12 < (int)n ? Oct - 1 : Oct;
-                lastNote = (int)n + 12 * Oct;
-
-                scaleList.Items.Add((Notes)n);
-                this.Refresh();
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-
-                builder.Command = ChannelCommand.NoteOn;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57 + 12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                System.Threading.Thread.Sleep(250);
-
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
-                builder.Command = ChannelCommand.NoteOff;
-                builder.MidiChannel = 0;
-                builder.Data1 = (int)lastNote + 57 + 12;
-                builder.Data2 = 127;
-                builder.Build();
-                outDevice.Send(builder.Result);
+                openFileDialog1.InitialDirectory = Application.ExecutablePath;
+                openFileDialog1.ShowDialog();
+                s.GetFromCSV(openFileDialog1.FileName);
+                t = new Thread(make_play);
+                t.Start();
             }
-            outDevice.Close();
         }
 
-        private void cmbMode_SelectedIndexChanged(object sender, EventArgs e)
+        private void make_play()
         {
-
+            lock (s)
+            {
+                s.play(140);
+            }
         }
     }
 }
