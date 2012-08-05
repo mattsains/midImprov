@@ -39,12 +39,12 @@ namespace midImprov
             {
 
                 System.Threading.Thread.Sleep(50);
-                Notes n = Mozart.component(k, i);
+                byte n = Mozart.component(k, i);
 
                 Oct = lastNote%12 > (int)n ? Oct + 1 : Oct;
                 lastNote = (int)n + 12 * Oct;
 
-                scaleList.Items.Add(n);
+                scaleList.Items.Add((Notes)n);
                 this.Refresh();
                 builder.Command = ChannelCommand.NoteOn;
                 builder.MidiChannel = 0;
@@ -79,12 +79,12 @@ namespace midImprov
             {
 
                 System.Threading.Thread.Sleep(50);
-                Notes n = Mozart.component(k, i);
+                byte n = Mozart.component(k, i);
 
                 Oct = lastNote % 12 < (int)n ? Oct - 1 : Oct;
                 lastNote = (int)n + 12 * Oct;
 
-                scaleList.Items.Add(n);
+                scaleList.Items.Add((Notes)n);
                 this.Refresh();
                 builder.Command = ChannelCommand.NoteOn;
                 builder.MidiChannel = 0;
